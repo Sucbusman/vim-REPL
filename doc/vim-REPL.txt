@@ -1,0 +1,108 @@
+*vim-REPL.txt* A simple REPL solusion in vim
+*vim-REPL*
+
+==================================================================
+CONTENTS                                            *repl-contents*
+  Introduction                                      |repl-intro|
+  Configuration                                     |repl-config|
+    Quick start                                     |repl-quick-start|  
+    With different leader                           |repl-leader|
+    Load current file                               |repl-load|
+    Load current function                           |repl-function|
+  Usage                                             |repl-usage|  
+  Get internal function out as api                  |repl-api|
+  License                                           |repl-license|
+
+==================================================================
+Introduction                                        *repl-intro*
+
+|vim-REPL| is a minimal solution for REPL in vim.In fact,it is 
+a collection of functions meet my daily REPL needs.
+
+------------------------------------------------------------------
+Configuration                                       *repl-config*
+
+For example:
+
+
+Quick usage with default hotkeys                    *repl-quick-start*
+>
+  In ~/.vim/ftplugin/python.vim
+  call REPL#Gen('python') "Send one line or block
+<
+
+Use Ctrl-c instead of Alt as leader,you can         *repl-leader*
+>
+  "In ~/.vimrc
+  autocmd BufNewFile,BufRead *.php call REPL#Gen('php -a','<c-c>')
+<
+
+Load current file                                   *repl-load*
+(only support common lisp,scheme,racket)
+>
+  "In ~/.vim/ftplugin/lisp.vim
+  let b:REPLSend=REPL#Gen('rlwrap sbcl')[0] "In this way,get the internal hooks
+  nnoremap <buffer> <leader>c :call b:REPLSend("lispload")<cr> "load the current file
+<
+
+Load current function                               *repl-function*
+(only support common lisp,scheme,racket,javascript,php) >
+
+  nnoremap <buffer> <leader>f :call b:REPLSend("function")<cr> "send the current function(or called procedure)
+<
+------------------------------------------------------------------
+Usage                                               *repl-usage*
+
+In default,in normal mode,press 
+`ALT+e` to execute current line
+`ALT+b` to send REPL prorgram a blank line
+`ALT+q` to close the corespondent interactive program and the window associated
+`:REPLChange "Another program name"` to change REPL program
+
+------------------------------------------------------------------
+Get Internal API for other use                      *repl-api*
+>
+  let [b:REPLsend,b:REPLleave,b:REPLchange]=REPL#Gen('you program')
+<
+NOTE:the prefix `b:` is useful to limit the variable to current buffer
+
+This will get three internal functions out for use as api,the names 
+for them is insignificant, but here name them as above.
+                                        
+REPLsend('lispload')~
+
+Send REPL program `(load "current file name")` to load current file
+>
+  nnoremap <buffer> c :call b:REPL("lispload")<cr>
+<
+
+REPLsend('function')~
+
+Find a function identifier(defun,define,function...etc) lines up,and match scope identifier("{}","()"...) lines down to
+get the whole function code, then send it to REPL program. 
+>
+  nnoremap <buffer> f :call b:REPL('function')<cr>
+<
+REPLleave()~
+
+Find the corespondent window running REPL program and send Ctrl-D to exit,
+then close the window and switch to previous window.
+
+REPLchange()~
+
+Change the REPL program name this buffer associated instead of using 
+the name given by REPL#Gen.
+It is useful when have more then one interactive program for a language.
+>
+  command! -nargs=1 Change :call b:REPLChange(<args>)
+<
+-------------------------------------------------------------------
+License                                            *repl-license*
+
+Copyleft 2017 .
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
